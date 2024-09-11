@@ -1,0 +1,36 @@
+# Node dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+public/
+
+# Handlebars view templates compiled output (if any)
+*.hbs.js
+
+# Logs and debug files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local environment files
+.env
+.env.local
+
+# Editor directories and files
+.vscode/
+.idea/
+.DS_Store
+
+# Optional npm cache directory
+.npm/
+
+# Output of `npm pack`
+*.tgz
+
+# TypeScript cache
+*.tsbuildinfo
