@@ -15,6 +15,10 @@ app.get("/", (req,res)=>{
     res.render("home", {title:"계시판1", message:"mmmmmeeeeesssssaaaaggggeeee"});
 })
 
+app.get("/write", (req,res)=>{
+    res.render("write", {title:"글쓰기 계시판 테스트"});
+})
+
 app.listen( port,()=>{
     console.log(`START SERVER : use ${port}`);
 });
