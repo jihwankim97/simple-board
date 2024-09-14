@@ -19,6 +19,10 @@ app.get("/write", (req,res)=>{
     res.render("write", {title:"글쓰기 계시판 테스트"});
 })
 
+app.get("/detail", (req,res)=>{
+    res.render("detail", {title:"상세 계시판 테스트"});
+})
+
 app.listen( port,()=>{
     console.log(`START SERVER : use ${port}`);
 });
