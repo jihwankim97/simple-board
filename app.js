@@ -3,6 +3,7 @@ const handlebars = require("express-handlebars");
 const path = require("path")
 const app = express();
 const port=3000;
+const mongodbConnection=require("./configs/mongodb-connection")
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -23,6 +24,11 @@ app.get("/detail", (req,res)=>{
     res.render("detail", {title:"상세 계시판 테스트"});
 })
 
-app.listen( port,()=>{
+let collection;
+app.listen( port, async ()=>{
     console.log(`START SERVER : use ${port}`);
+    const mongoClient = await mongodbConnection();
+    collection = mongoClient.db().collection("post");
+    console.log("MongoDB connected~");
 });
+
