@@ -59,12 +59,24 @@ app.post("/write", async (req, res)=>{
 //
 
 
-app.get("/detail/:id", async(req,res)=>{
-    const result = await postService.getDetailPost(collection, req.params.id);
-    res.render("detail", {title:"상세 계시판",
-        post:result.value,
-    });
+app.get("/detail/:id", async (req, res) => {
+    try {
+        const post = await postService.getDetailPost(collection, req.params.id);
+        console.log(post);  
+        if (!post) {  
+            return res.status(404).send("Post not found");
+        }
+
+        res.render("detail", {
+            title: "상세 게시판",
+            post: post,  
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
+
 
 
 
