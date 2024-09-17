@@ -29,8 +29,20 @@ app.use(express.urlencoded({extended: true}));
 //
 
 //라우터 설정
-app.get("/", (req,res)=>{
-    res.render("home", {title:"계시판1", message:"mmmmmeeeeesssssaaaaggggeeee"});
+app.get("/", async (req,res)=>{
+    const page= parseInt(req.query.page)||1;
+    const search =req.query.search ||"";
+    try{
+        const [posts, paginator] = await postService.list(collection, page, search);
+
+        res.render("home", {title:"메인 계시판", search, paginator, posts});
+    }
+    catch(error){
+        console.error(error);
+        res.render("home", {title:"메인 계시판"})
+    }
+
+    
 });
 
 
@@ -47,8 +59,11 @@ app.post("/write", async (req, res)=>{
 //
 
 
-app.get("/detail", (req,res)=>{
-    res.render("detail", {title:"상세 계시판 테스트"});
+app.get("/detail/:id", async(req,res)=>{
+    const result = await postService.getDetailPost(collection, req.params.id);
+    res.render("detail", {title:"상세 계시판",
+        post:result.value,
+    });
 });
 
 

@@ -1,50 +1,57 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>게시판</title>
-    <link rel="stylesheet" href="/style.css"> 
-</head>
-<body>
-    <h2>{{title}}</h2>
+<h1>{{title}}</h1> 
 
-    <input type="text" name="search" id="search" placeholder="검색어를 입력하세요." />
-    <button>검색</button>
-    <br />
 
-    <a href="/write" class="write-link">글쓰기</a>
-    <br />
+<input type="text" name="search" id="search" value="{{search}}" size="50" placeholder="검색어를 입력하세요." />
+<button onclick="location.href=`/?search=${document.getElementById('search').value}`">검색</button>
+<br />
 
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th width="50%">제목</th>
-                    <th>작성자</th>
-                    <th>조회수</th>
-                    <th>등록일</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><a href="/detail/">타이틀</a></td>
-                    <td align="center">작성자이름</td>
-                    <td align="center">99999</td>
-                    <td align="center">2024.09.12</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<a href="/write"> 글쓰기</a>
+<br />
 
-    <div class="pagination">
-        <a href="#">&lt;&lt;</a>
-        <a href="#">&lt;</a>
-        <a href="#">1</a>
-        <a href="#">2</a>
-        <a href="#">3</a>
-        <a href="#">4</a>
-        <a href="#">&gt;</a>
-        <a href="#">&gt;&gt;</a>
-    </div>
-</body>
-</html>
+
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th width="50%">제목</th>
+        <th>작성자</th>
+        <th>조회수</th>
+        <th>등록일</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each posts}}
+      <tr>
+        <td><a href="/detail/{{_id}}">{{title}}</a></td>
+        <td>{{writer}}</td>
+        <td>{{hits}}</td>
+        <td>{{dateString createdDt}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+<div>
+  {{#with paginator}}
+  <a href="/?page=1&search={{@root.search}}">&lt;&lt;</a>
+  {{#if hasPrev}}
+  <a href="/?page={{prevPage}}&search={{@root.search}}">&lt;</a>
+  {{else}}
+  <a>&lt;</a>
+  {{/if}}
+  {{#each pageList}}
+  {{#if (eq . @root.paginator.page)}}
+  <a>{{.}}</a>
+  {{else}}
+  <a href="/?page={{.}}&search={{@root.search}}">{{.}}</a>
+  {{/if}}
+  {{/each}}
+  {{#if hasNext}}
+  <a href="/?page={{nextPage}}&search={{@root.search}}">&gt;</a>
+  {{else}}
+  <a>&gt;</a>
+  {{/if}}
+  <a href="/?page={{lastPage}}&search={{@root.search}}">&gt;&gt;</a>
+  {{/with}}
+</div>
