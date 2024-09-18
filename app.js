@@ -5,6 +5,8 @@ const app = express();
 const port=3000;
 const mongodbConnection=require("./configs/mongodb-connection")
 const postService=require("./services/post-service");
+const {ObjectId}= require("mongodb");
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.engine("handlebars", handlebars.create({
@@ -56,7 +58,7 @@ app.get("/modify/:id", async (req, res)=>{
 
     const post = await postService.getPostById(collection, req.params.id);
     console.log(post);
-    res.render("write", {title: "테스트 게시판", mode:"modify", post});
+    res.render("write", {title: "글쓰기 게시판", mode:"modify", post});
 })
 
 app.post("/modify/", async (req, res)=>{
@@ -113,6 +115,22 @@ app.post("/check-password", async (req, res)=>{
         return res.json({isExist: true});
     }
 });
+
+
+app.delete("/delete", async (req, res)=>{
+    const {id, password}=req.body;
+    try {
+        const result = await collection.deleteOne({_id:new ObjectId(id), password:password});
+        if(result.deletedCount !==1) {
+            console.log("삭제 실패");
+            return res.json({isSuccess: false});
+        }
+        return res.json({isSuccess:true});
+    } catch (error){
+        console.error(error);
+        return res.json({isSuccess: false});
+    }
+})
 
 
 
