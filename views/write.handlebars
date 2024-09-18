@@ -1,29 +1,27 @@
-
 <h1>[{{title}}] 글 {{#if (eq mode "create")}}작성{{else}}수정{{/if}}</h1>
 <div>
-
-  <form name="boardForm" method="post" {{#if (eq mode "create" )}}action="/write" {{else}}action="/modify" {{/if}}>
+  <form name="boardForm" method="post" {{#if (eq mode "create" )}}action="/write" {{else}}action="/modify" {{/if}} onsubmit="return validateForm()">
     {{#if (eq mode "modify")}}
     <input type="hidden" name="id" value="{{post._id}}" />
     {{/if}}
 
     <div>
       <label>제목</label>
-      <input type="text" name="title" placeholder="제목을 넣어주세요" value="{{post.title}}" />
+      <input type="text" name="title" id="title" placeholder="제목을 넣어주세요" value="{{post.title}}" />
     </div>
     <div>
       <label>이름</label>
-      <input type="text" name="writer" placeholder="이름을 넣어주세요" value="{{post.writer}}" />
+      <input type="text" name="writer" id="writer" placeholder="이름을 넣어주세요" value="{{post.writer}}" />
     </div>
 
     <div>
       <label>비밀번호</label>
-      <input type="password" name="password" placeholder="비밀번호를 넣어주세요" />
+      <input type="password" name="password" id="password" placeholder="비밀번호를 넣어주세요" />
     </div>
 
     <div>
       <label>본문을 입력하세요</label><br />
-      <textarea placeholder="본문" name="content" cols="50" rows="10">{{post.content}}</textarea>
+      <textarea placeholder="본문" name="content" id="content" cols="50" rows="10">{{post.content}}</textarea>
       <br />
       <div>
         <button type="submit">저장</button>
@@ -31,3 +29,34 @@
       </div>
   </form>
 </div>
+
+<script>
+  function validateForm() {
+    const title = document.getElementById("title").value.trim();
+    const writer = document.getElementById("writer").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const content = document.getElementById("content").value.trim();
+
+    if (!title) {
+      alert("제목을 입력해주세요.");
+      return false;
+    }
+
+    if (!writer) {
+      alert("이름을 입력해주세요.");
+      return false;
+    }
+
+    if (!password) {
+      alert("비밀번호를 입력해주세요.");
+      return false;
+    }
+
+    if (!content) {
+      alert("본문을 입력해주세요.");
+      return false;
+    }
+
+    return true;
+  }
+</script>

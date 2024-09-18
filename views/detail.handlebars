@@ -3,7 +3,7 @@
 <h2 class="text-xl">{{title}}</h2>
 
 <div>
-  작성자:<b>{{writer}}</b>
+  작성자: <b>{{writer}}</b>
 </div>
 
 <div>
@@ -13,24 +13,26 @@
 </div>
 
 <div>
-  <pre>{{content}}.</pre>
+  <pre>{{content}}</pre>
 </div>
 
 <div>
-  <h3>3개의 댓글이 있습니다.</h3>
+  <h3>{{lengthOfList comments}}개의 댓글이 있습니다.</h3>
 </div>
 
 <section>
-  <form method="post" action="/write-comment">
+  <form method="post" action="/write-comment" onsubmit="return validateCommentForm()">
+    <input type="hidden" name="id" value="{{_id}}" />
     <div>
       <div>
-        <input type="text" name="name" placeholder="이름" />
-        <input type="password" name="password" placeholder="비밀번호" />
+        <input type="text" name="name" id="comment-name" placeholder="이름" />
+        <input type="password" name="password" id="comment-password" placeholder="비밀번호" />
       </div>
       <textarea
         cols="40"
         rows="3"
         name="comment"
+        id="comment-content"
         placeholder="댓글을 입력하세요."
       ></textarea>
 
@@ -40,33 +42,34 @@
 </section>
 
 <section>
+  {{#each comments}}
   <div>
     <div>
-      작성자:
-      <b>댓글 작성자</b>
+      작성자: <b>{{name}}</b>
     </div>
     <div>
-      작성일시: 22024-09-14 00:00:00
-      <button onclick="deleteComment('1')">삭제</button>
-    </div>
-    <div>
-      <pre>{{comment}}</pre>
+      작성일시: {{dateString createdDt}}
+      <button onclick="deleteComment('{{idx}}')">삭제</button>
     </div>
   </div>
+  <div>
+    <pre>{{comment}}</pre>
+  </div>
+  {{/each}}
 </section>
 {{/with}}
-<footer>
-  <div>
-    <a href="/">목록으로</a>
-  </div>
-</footer>
+
+<div>
+  <a href="/">목록으로</a>
+</div>
+
 <script>
   const postOption = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-  }
+  };
 
   async function modifyPost() {
     const password = prompt("패스워드를 입력해주세요");
@@ -74,6 +77,7 @@
     if (!password) {
       return;
     }
+
     const result = await fetch("/check-password", {
       ...postOption,
       body: JSON.stringify({ id: "{{post._id}}", password })
@@ -82,26 +86,27 @@
     const data = await result.json();
 
     if (data.isExist) {
-      document.location = "/modify/{{post._id}}"
+      document.location = "/modify/{{post._id}}";
     } else {
       alert("패스워드가 올바르지 않습니다.");
     }
   }
 
-    const deleteOption = {
+  const deleteOption = {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
-  }
+  };
 
   async function deletePost() {
-    const password = prompt("삭제하려면 패스워드를 입력해주세요"); 
+    const password = prompt("삭제하려면 패스워드를 입력해주세요");
 
     if (!password) {
       return;
     }
-    const result = await fetch("/delete", {  
+
+    const result = await fetch("/delete", {
       ...deleteOption,
       body: JSON.stringify({ id: "{{post._id}}", password })
     });
@@ -113,5 +118,50 @@
     }
 
     document.location = "/";
+  }
+
+  async function deleteComment(idx) {
+    const password = prompt("삭제하려면 패스워드를 입력해주세요");
+
+    if (!password) {
+      return;
+    }
+
+    const result = await fetch("/delete-comment", {
+      ...deleteOption,
+      body: JSON.stringify({ id: "{{post._id}}", idx, password })
+    });
+
+    const data = await result.json();
+    if (!data.isSuccess) {
+      alert("삭제에 실패했습니다. 패스워드를 확인해주세요.");
+      return;
+    }
+
+    alert("삭제 성공!");
+    document.location.reload();
+  }
+
+  function validateCommentForm() {
+    const name = document.getElementById("comment-name").value.trim();
+    const password = document.getElementById("comment-password").value.trim();
+    const comment = document.getElementById("comment-content").value.trim();
+
+    if (!name) {
+      alert("이름을 입력해주세요.");
+      return false; 
+    }
+
+    if (!password) {
+      alert("비밀번호를 입력해주세요.");
+      return false; 
+    }
+
+    if (!comment) {
+      alert("댓글 내용을 입력해주세요.");
+      return false; 
+    }
+
+    return true; 
   }
 </script>
