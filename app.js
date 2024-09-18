@@ -48,8 +48,31 @@ app.get("/", async (req,res)=>{
 
 //글쓰기
 app.get("/write", (req,res)=>{
-    res.render("write", {title:"글쓰기 계시판 테스트"});
+    res.render("write", {title:"글쓰기 계시판 ", mode: "create"});
 });
+
+app.get("/modify/:id", async (req, res)=>{
+    const {id} = req.params.id;
+
+    const post = await postService.getPostById(collection, req.params.id);
+    console.log(post);
+    res.render("write", {title: "테스트 게시판", mode:"modify", post});
+})
+
+app.post("/modify/", async (req, res)=>{
+    const {id, title, writer, password, content} = req.body;
+
+    const post = {
+        title,
+        writer,
+        password,
+        content,
+        createDt: new Date().toISOString(),
+    };
+    const result = postService.updatePost(collection, id, post);
+    res.redirect(`/detail/${id}`);
+})
+
 app.post("/write", async (req, res)=>{
     const post= req.body;
     const result = await postService.writePost(collection, post);
@@ -76,6 +99,21 @@ app.get("/detail/:id", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
+app.post("/check-password", async (req, res)=>{
+    const {id, password}=req.body;
+
+    const post = await postService.getPostByIdAndPassword(collection, {id, password});
+
+    console.log(post)
+    if(!post){
+        return res.status(404).json({isExist:false});
+    } else {
+        return res.json({isExist: true});
+    }
+});
+
 
 
 
